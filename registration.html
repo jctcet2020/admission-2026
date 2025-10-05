@@ -309,60 +309,20 @@
         });
 
         async function submitToGoogleSheets(username, mobile) {
-            // IMPORTANT: Replace this URL with your Google Apps Script Web App URL
-            // You'll get this URL after deploying your Google Apps Script
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxr4hKLIbQ97tnXhpuur-i8QXuhSpkiKE2WJq4xECYkWJqEznJ7qggkEkFZPFKvq6Zd/exec';
-
-            const formData = {
-                eventId: eventId,
-                eventType: eventType,
-                location: location,
-                username: username,
-                mobile: mobile,
-                timestamp: new Date().toISOString()
-            };
-
-            // For testing without Google Sheets, comment out the fetch and uncomment the setTimeout
-            /*
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    console.log('Form Data:', formData);
-                    resolve();
-                }, 2000);
-            });
-            */
-
-            const response = await fetch(scriptURL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            });
-
-            // Wait a bit to ensure data is saved
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.classList.add('show');
-            setTimeout(() => {
-                errorMessage.classList.remove('show');
-            }, 5000);
-        }
-
-        function registerAnother() {
-            successMessage.classList.remove('show');
-            form.style.display = 'block';
-            form.reset();
-        }
-
-        // Mobile number input - only allow numbers
-        document.getElementById('mobile').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
+    // TEMPORARY: Simulate successful submission for testing
+    console.log('SIMULATED SUBMISSION:');
+    console.log('Name:', username);
+    console.log('Mobile:', mobile);
+    console.log('Event:', eventType, location);
+    
+    // Simulate API call delay
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log('Registration simulated successfully!');
+            resolve({result: 'success'});
+        }, 1500);
+    });
+}
     </script>
 </body>
 </html>
