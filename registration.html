@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header .event-type {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header .location {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .success-message p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .register-another-btn {
+            padding: 12px 30px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .register-another-btn:hover {
+            background: #218838;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Event Registration</h1>
+            <div class="event-type" id="eventType">Loading...</div>
+            <div class="location">📍 <span id="location">Loading...</span></div>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="username">Full Name *</label>
+                <input type="text" id="username" name="username" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mobile">Mobile Number *</label>
+                <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit mobile number" 
+                       pattern="[0-9]{10}" maxlength="10" required>
+                <div class="help-text">Please enter a valid 10-digit mobile number</div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">Submit Registration</button>
+        </form>
+
+        <div id="loadingMessage" class="loading">
+            <div class="spinner"></div>
+            <p>Submitting your registration...</p>
+        </div>
+
+        <div id="successMessage" class="success-message">
+            <div class="success-icon">✅</div>
+            <h2>Registration Successful!</h2>
+            <p>Thank you for registering. Your information has been recorded.</p>
+            <button class="register-another-btn" onclick="registerAnother()">Register Another Person</button>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('eventId');
+        const eventType = urlParams.get('type');
+        const location = urlParams.get('location');
+
+        // Display event details
+        if (eventType && location) {
+            document.getElementById('eventType').textContent = eventType;
+            document.getElementById('location').textContent = location;
+        } else {
+            document.getElementById('eventType').textContent = 'Event Not Found';
+            document.getElementById('location').textContent = 'Invalid QR Code';
+        }
+
+        // Form submission
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+
+            // Validation
+            if (!username || !mobile) {
+                showError('Please fill in all fields!');
+                return;
+            }
+
+            if (!/^[0-9]{10}$/.test(mobile)) {
+                showError('Please enter a valid 10-digit mobile number!');
+                return;
+            }
+
+            // Show loading
+            form.style.display = 'none';
+            loadingMessage.classList.add('show');
+            errorMessage.classList.remove('show');
+
+            try {
+                // Submit to Google Sheets
+                await submitToGoogleSheets(username, mobile);
+
+                // Show success message
+                loadingMessage.classList.remove('show');
+                successMessage.classList.add('show');
+
+                // Reset form
+                form.reset();
+            } catch (error) {
+                console.error('Error:', error);
+                loadingMessage.classList.remove('show');
+                form.style.display = 'block';
+                showError('Failed to submit registration. Please try again.');
+            }
+        });
+
+        async function submitToGoogleSheets(username, mobile) {
+            // IMPORTANT: Replace this URL with your Google Apps Script Web App URL
+            // You'll get this URL after deploying your Google Apps Script
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby8x77bOQA3hpiRxrUAqCI2oalsyy8EewZguBFZKFscCDONhWozMEJ1Czn-vmkWajRN/exec';
+
+            const formData = {
+                eventId: eventId,
+                eventType: eventType,
+                location: location,
+                username: username,
+                mobile: mobile,
+                timestamp: new Date().toISOString()
+            };
+
+            // For testing without Google Sheets, comment out the fetch and uncomment the setTimeout
+            /*
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log('Form Data:', formData);
+                    resolve();
+                }, 2000);
+            });
+            */
+
+            const response = await fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            // Wait a bit to ensure data is saved
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        function registerAnother() {
+            successMessage.classList.remove('show');
+            form.style.display = 'block';
+            form.reset();
+        }
+
+        // Mobile number input - only allow numbers
+        document.getElementById('mobile').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Event Registration System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .qr-result {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .qr-result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .qr-code-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #qrcode {
+            margin: 0 auto;
+        }
+
+        .event-details {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .event-details p {
+            margin: 8px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .event-details strong {
+            color: #333;
+        }
+
+        .download-btn {
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+        }
+
+        .form-url {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            word-break: break-all;
+            font-size: 13px;
+            color: #856404;
+        }
+
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Admin Panel</h1>
+        <p class="subtitle">School Visit & Admission Expo Registration System</p>
+        
+        <form id="adminForm">
+            <div class="form-group">
+                <label for="eventType">Event Type *</label>
+                <select id="eventType" required>
+                    <option value="">-- Select Event Type --</option>
+                    <option value="School Visit">School Visit</option>
+                    <option value="Polytechnic">Polytechnic</option>
+                    <option value="Expo">Expo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location *</label>
+                <input type="text" id="location" placeholder="e.g., Mumbai, Delhi, Bangalore" required>
+            </div>
+
+            <button type="submit" class="btn">Generate QR Code</button>
+        </form>
+
+        <div id="qrResult" class="qr-result">
+            <div class="success-icon">✅</div>
+            <h3>QR Code Generated Successfully!</h3>
+            
+            <div class="qr-code-container">
+                <div id="qrcode"></div>
+            </div>
+
+            <div class="event-details">
+                <p><strong>Event Type:</strong> <span id="displayEventType"></span></p>
+                <p><strong>Location:</strong> <span id="displayLocation"></span></p>
+                <p><strong>Event ID:</strong> <span id="displayEventId"></span></p>
+            </div>
+
+            <button id="downloadBtn" class="download-btn">📥 Download QR Code</button>
+
+            <div class="form-url">
+                <strong>Registration Form URL:</strong><br>
+                <span id="formUrl"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script>
+        const form = document.getElementById('adminForm');
+        const qrResult = document.getElementById('qrResult');
+        const qrcodeDiv = document.getElementById('qrcode');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const eventType = document.getElementById('eventType').value;
+            const location = document.getElementById('location').value;
+
+            if (!eventType || !location.trim()) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            // Generate unique event ID
+            const eventId = generateEventId();
+
+            // Create the registration form URL
+            // IMPORTANT: Replace 'YOUR_FORM_URL_HERE' with the actual URL where you'll host the registration form
+            // For local testing, you can use: file:///path/to/registration.html?eventId=...
+            // For online hosting, use: https://yourdomain.com/registration.html?eventId=...
+            const formUrl = `registration.html?eventId=${eventId}&type=${encodeURIComponent(eventType)}&location=${encodeURIComponent(location)}`;
+
+            // Clear previous QR code
+            qrcodeDiv.innerHTML = '';
+
+            // Generate new QR code
+            new QRCode(qrcodeDiv, {
+                text: formUrl,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Display event details
+            document.getElementById('displayEventType').textContent = eventType;
+            document.getElementById('displayLocation').textContent = location;
+            document.getElementById('displayEventId').textContent = eventId;
+            document.getElementById('formUrl').textContent = formUrl;
+
+            // Show result
+            qrResult.classList.add('show');
+
+            // Scroll to result
+            qrResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Setup download button
+            setupDownloadButton(eventType, location);
+        });
+
+        function generateEventId() {
+            return 'EVT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        function setupDownloadButton(eventType, location) {
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            downloadBtn.onclick = function() {
+                const canvas = qrcodeDiv.querySelector('canvas');
+                if (canvas) {
+                    const url = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = `QR_${eventType.replace(/\s+/g, '_')}_${location.replace(/\s+/g, '_')}.png`;
+                    link.href = url;
+                    link.click();
+                }
+            };
+        }
+    </script>
+</body>
+</html>
